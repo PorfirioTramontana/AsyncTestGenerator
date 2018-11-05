@@ -5,31 +5,25 @@ import java.io.IOException;
 public class Main {
 
 	public static void main(String[] args) throws IOException {
-		Config conf=new Config(0);
-		
-		//configurazione strumento
-		Generator gen=new Generator(conf);
-		//setta parametri di strategy
-		GenericStrategy s=new RandomStrategy();
-		s.setNumTest(10);
-		s.setLength(10);
-		
-		//parametri dipendenti da app
-		TestAppParameter tap=new TestAppParameter("UnoProcidaResidenteAsync");
-		tap.events.add(new Event("EnableTask","DownloadMezziTask","GeneralEvent.start(DownloadMezziTask.sem);"));
-		tap.events.add(new Event("FinishTask","DownloadMezziTask","GeneralEvent.finish(DownloadMezziTask.sem);"));
-		tap.events.add(new Event("EnableTask","LeggiMeteoTask","GeneralEvent.start(LeggiMeteoTask.sem);"));
-		tap.events.add(new Event("FinishTask","LeggiMeteoTask","GeneralEvent.finish(LeggiMeteoTask.sem);"));
-		tap.events.add(new Event("StartApp","","GeneralEvent.startApp(\"com.porfirio.orariprocida2011\");"));
-		tap.events.add(new Event("PauseApp","","GeneralEvent.pause();"));
-		tap.events.add(new Event("ResumeApp","","GeneralEvent.resume();"));
-		tap.events.add(new Event("ExecuteUserEvent","AggiornaOrariDaWeb","SpecificUIEvent.execute(SpecificUIEvent.AGGIORNA_ORARI_DA_WEB);"));
-		tap.events.add(new Event("ExecuteUserEvent","LeggiMeteo","SpecificUIEvent.execute(SpecificUIEvent.LEGGI_METEO);"));
+		Config conf=null;
+		String c="";		
+		if (args.length==4) 
+			conf=new Config(args[0],args[1],Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+		else if (args.length==1) {
+			if (args[0].equalsIgnoreCase("UnoProcidaresidenteRandom"))
+				conf=new Config("UnoProcidaresidenteRandom","RANDOM",Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+			else if (args[0].equalsIgnoreCase("UnoProcidaresidenteRandom1010"))
+				conf=new Config("UnoProcidaresidenteRandom","RANDOM",10,10);
+		}			
+		else System.exit(1);
 
-		//constraints generali
-		//tap.constraints.add(new Constraint().addEventBefore(e))
-		
-		gen.generate(s,tap);
+		//configurazione strumento	
+		if (conf.valid()) {
+			Generator gen=new Generator(conf);				
+			gen.generate();
+		}
+		else
+			System.out.println("Unknown configuration");
 	}
 
 }

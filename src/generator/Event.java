@@ -11,7 +11,7 @@ public class Event {
 	Event(String n, String t, String ts){
 		name=n;
 		task=t;
-		testStatement=t;
+		testStatement=ts;
 	}
 	
 	boolean equals(Event e) {

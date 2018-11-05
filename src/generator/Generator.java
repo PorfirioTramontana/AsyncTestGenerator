@@ -8,15 +8,19 @@ import java.util.Random;
 public class Generator {
 	String path;
 	String fileName;
+	GenericStrategy s;
+	TestAppParameter tap;
 
 
 	public Generator(Config conf) {
 		//Setta eventuali parametri di generazione
-		path=conf.inputPath;
-		fileName="randomTest.java";
+		path=conf.outputPath;
+		fileName=conf.fileName;
+		s=conf.getS();
+		tap=conf.getTap();
 	}
 
-	public void generate(GenericStrategy s, TestAppParameter tap) throws IOException {
+	public void generate() throws IOException {
 		// Algoritmo di generazione		
 
 		//Apri file nel quale generare i test
@@ -32,7 +36,7 @@ public class Generator {
 				int tn; //test number
 				for (tn=0;tn<s.getNumTest();tn++) {
 				//scrivi il preambolo del singolo test
-				addTestPreamble(printWriter);
+				addTestPreamble(printWriter,tn,"RANDOM");
 				
 				// crea testcase
 				TestCase tc=new TestCase();
@@ -52,9 +56,10 @@ public class Generator {
 						//scrivi l'evento nel file
 						printWriter.println(tap.events.get(evento).getTestStatement());
 					}
+					//scrivi la parte finale del test
+					printWriter.println("}");					
 				}
-				//scrivi la parte finale del test
-				printWriter.println("}");
+
 			}
 			//scrivi la parte finale del file di test
 			addTestEnding(printWriter);
@@ -73,8 +78,9 @@ public class Generator {
 		return;
 	}
 
-	private void addTestPreamble(PrintWriter printWriter) {
+	private void addTestPreamble(PrintWriter printWriter, int tn, String string) {
 		printWriter.println("@Test");
+		printWriter.println("public void "+string+tn+"Test() throws InterruptedException {");
 		return;
 	}
 
