@@ -1,5 +1,7 @@
 package generator;
 
+import java.util.ArrayList;
+
 public class Config {
 	String inputPath;
 	String outputPath;
