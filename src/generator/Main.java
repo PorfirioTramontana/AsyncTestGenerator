@@ -11,11 +11,14 @@ public class Main {
 			conf=new Config(args[0],args[1],Integer.parseInt(args[2]),Integer.parseInt(args[3]));
 		else if (args.length==1) {
 			if (args[0].equalsIgnoreCase("UnoProcidaresidenteRandom"))
-				conf=new Config("UnoProcidaresidenteRandom","RANDOM",Integer.parseInt(args[2]),Integer.parseInt(args[3]));
+				conf=new Config("UnoProcidaresidenteRandom","random",Integer.parseInt(args[2]),Integer.parseInt(args[3]));
 			else if (args[0].equalsIgnoreCase("UnoProcidaresidenteRandom1010"))
-				conf=new Config("UnoProcidaresidenteRandom","RANDOM",10,10);
+				conf=new Config("UnoProcidaresidenteRandom","random",10,10);
 		}			
-		else System.exit(1);
+		else if (args.length==0)
+			conf=new Config("UnoProcidaresidenteRandom","random",100,20);
+		else	
+			System.exit(1);
 
 		//configurazione strumento	
 		if (conf.valid()) {

@@ -22,21 +22,33 @@ public class Generator {
 
 	public void generate() throws IOException {
 		// Algoritmo di generazione		
+		FileWriter fileWriter;
+		PrintWriter printWriter = null;
+		FileWriter batchWriter;
+		PrintWriter printBatch = null;
 
-		//Apri file nel quale generare i test
-		FileWriter fileWriter = new FileWriter(path+fileName);
-	    PrintWriter printWriter = new PrintWriter(fileWriter);
-	
-		//Scrivi il preambolo
-		addPreamble(printWriter);
 		//se la strategia e' random
-			if (s.getName().contentEquals("RANDOM")) {			
+			if (s.getName().contentEquals("random")) {			
 				Random rnd=new Random();
+				batchWriter= new FileWriter(path+fileName+".bat");
+				printBatch =new PrintWriter(batchWriter);
+				
 			// cicla sul numero di test previsti
 				int tn; //test number
 				for (tn=0;tn<s.getNumTest();tn++) {
-				//scrivi il preambolo del singolo test
-				addTestPreamble(printWriter,tn,"RANDOM");
+					//Apri file nel quale generare i test
+					fileWriter = new FileWriter(path+fileName+tn+".java");
+				    printWriter = new PrintWriter(fileWriter);
+				
+				    //scrivi riga nel batch
+				    printBatch.println("adb shell am instrument -w -r   -e debug false -e class 'com.porfirio.orariprocida2011.activities."
+				    +fileName+tn+"' com.porfirio.orariprocida2011.test/android.support.test.runner.AndroidJUnitRunner >> "+fileName+"Report.txt");
+					
+				    //Scrivi il preambolo
+					addPreamble(printWriter,tn);
+
+					//scrivi il preambolo del singolo test
+					addTestPreamble(printWriter,tn,s.getName());
 				
 				// crea testcase
 				TestCase tc=new TestCase();
@@ -58,14 +70,15 @@ public class Generator {
 					}
 					//scrivi la parte finale del test
 					printWriter.println("}");					
-				}
+				
+					//scrivi la parte finale del file di test
+					addTestEnding(printWriter);
+				//chiudi il file
+			    printWriter.close();
 
 			}
-			//scrivi la parte finale del file di test
-			addTestEnding(printWriter);
-		//chiudi il file
-	    printWriter.close();
-
+				batchWriter.close();
+			}
 				
 	}
 	
@@ -80,11 +93,13 @@ public class Generator {
 
 	private void addTestPreamble(PrintWriter printWriter, int tn, String string) {
 		printWriter.println("@Test");
-		printWriter.println("public void "+string+tn+"Test() throws InterruptedException {");
+		printWriter.println("public void "+string+"Test"+tn+"() throws InterruptedException {");
+		printWriter.println("GeneralEvent.declareandSetSemaphore(DownloadMezziTask.sem);");
+		printWriter.println("GeneralEvent.declareandSetSemaphore(LeggiMeteoTask.sem);");
 		return;
 	}
 
-	public void addPreamble(PrintWriter printWriter) {
+	public void addPreamble(PrintWriter printWriter,int tn) {
 		printWriter.println("package com.porfirio.orariprocida2011.activities;");
 		printWriter.println("import android.support.test.filters.SdkSuppress;");
 		printWriter.println("import android.support.test.runner.AndroidJUnit4;");
@@ -96,7 +111,7 @@ public class Generator {
 		addSpecificImport(printWriter);
 		printWriter.println("@RunWith(AndroidJUnit4.class)");
 		printWriter.println("@SdkSuppress(minSdkVersion = 18)");
-		printWriter.println("public class AsyncTest {");
+		printWriter.println("public class "+fileName+tn+" {");
 		printWriter.println("@BeforeClass");
 		printWriter.println("public static void startup() {");
 		printWriter.println("GeneralEvent.setTime(GeneralEvent.NORMAL);");

@@ -4,13 +4,13 @@ public class RandomStrategy extends GenericStrategy {
 	private int length;
 	
 	RandomStrategy(int l,int n){
-		setName("RANDOM");
+		setName("random");
 		setLength(l);
 		setNumTest(n);
 	}
 	
 	RandomStrategy(){
-		setName("RANDOM");
+		setName("random");
 	}
 
 	@Override

@@ -7,7 +7,6 @@ public class Config {
 	String outputPath;
 	String fileName;
 	String app;
-	String strategyType;
 	private GenericStrategy s;
 	private TestAppParameter tap;
 	private boolean valid=false;
@@ -30,12 +29,14 @@ public class Config {
 
 	public Config(String string, String string2, int parseInt, int parseInt2) {
 		outputPath=".\\";
-		fileName="randomTest.java";
-		
+				
 		//setta parametri di strategy
 		setS(new RandomStrategy());
 		getS().setNumTest(parseInt);
 		getS().setLength(parseInt2);
+		
+		outputPath=".\\";
+		fileName=getS().getName()+"Test";
 		
 		setConfig();
 
