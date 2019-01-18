@@ -79,6 +79,66 @@ public class Generator {
 			}
 				batchWriter.close();
 			}
+			else if (s.getName().contentEquals("systematic")) {
+				//algoritmo di generazione sistematica
+				batchWriter= new FileWriter(path+fileName+".bat");
+				printBatch =new PrintWriter(batchWriter);
+				
+				//conteggio numero di test=0
+				//conteggio lunghezzatest=0
+				//pila delle sequenze iniziate = vuoto
+				
+				//mentre lunghezzatest<max e numerotest<max 
+					//ciclo sugli eventi previsti
+				
+				
+				
+			// cicla sul numero di test previsti
+				int tn; //test number
+				for (tn=0;tn<s.getNumTest();tn++) {
+					//Apri file nel quale generare i test
+					fileWriter = new FileWriter(path+fileName+tn+".java");
+				    printWriter = new PrintWriter(fileWriter);
+				
+				    //scrivi riga nel batch
+				    printBatch.println("adb shell am instrument -w -r   -e debug false -e class 'com.porfirio.orariprocida2011.activities."
+				    +fileName+tn+"' com.porfirio.orariprocida2011.test/android.support.test.runner.AndroidJUnitRunner >> "+fileName+"Report.txt");
+					
+				    //Scrivi il preambolo
+					addPreamble(printWriter,tn);
+
+					//scrivi il preambolo del singolo test
+					addTestPreamble(printWriter,tn,s.getName());
+				
+				// crea testcase
+				TestCase tc=new TestCase();
+				tc.setTap(tap);
+				// cicla sulla lunghezza prevista per i test
+					int en; //event number
+					for (en=0;en<s.getLength();en++) {
+					//genera un evento nell'elenco di quelli proposti, verificando i vincoli	
+						boolean ok;
+						int evento;
+						do{
+							evento=rnd.nextInt(tap.events.size());
+							ok=tc.isAllowed(tap.events.get(evento));
+						} while(!ok);
+						//aggiungi l'evento alla sequenza
+						tc.eventSequence.add(tap.events.get(evento));						
+						//scrivi l'evento nel file
+						printWriter.println(tap.events.get(evento).getTestStatement());
+					}
+					//scrivi la parte finale del test
+					printWriter.println("}");					
+				
+					//scrivi la parte finale del file di test
+					addTestEnding(printWriter);
+				//chiudi il file
+			    printWriter.close();
+
+			}
+				batchWriter.close();
+			} 
 				
 	}
 	
@@ -96,6 +156,8 @@ public class Generator {
 		printWriter.println("public void "+string+"Test"+tn+"() throws InterruptedException {");
 		printWriter.println("GeneralEvent.declareandSetSemaphore(DownloadMezziTask.sem);");
 		printWriter.println("GeneralEvent.declareandSetSemaphore(LeggiMeteoTask.sem);");
+	    printWriter.print("GeneralEvent.declareandSetSemaphore(OrariProcida2011Activity.sem);");
+
 		return;
 	}
 
